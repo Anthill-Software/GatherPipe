@@ -1,0 +1,15 @@
+[Unit]
+Description=GatherPipe Orchestrator Engine
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/gatherpipe start
+Restart=always
+RestartSec=5
+
+SyslogIdentifier=gatherpipe
+
+[Install]
+WantedBy=multi-user.target

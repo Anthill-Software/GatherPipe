@@ -1,0 +1,91 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: ./cmd/server/main.go
+    binary: gatherpipe
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    # On filtre pour coller exactement à ton ancienne matrice de build
+    ignore:
+      - goos: darwin
+        goarch: amd64
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+      - goos: windows
+        goarch: arm
+
+# --- GENERATION DES PAQUETS DEB ET APK (Linux) ---
+nfpms:
+  - id: gatherpipe-deb
+    package_name: gatherpipe
+    formats:
+      - deb
+    vendor: "GatherPipe Team"
+    homepage: "https://github.com/Anthill-Software/GatherPipe"
+    maintainer: "F.Colinet <23095517+FColinet@users.noreply.github.com>"
+    description: "Orchestrateur de métriques modulaire."
+    license: "CC BY-NC-SA 4.0"
+    
+    # Déploiement des fichiers sur le système Linux cible
+    contents:
+      - src: deployment/debian/gatherpipe.service
+        dst: /lib/systemd/system/gatherpipe.service
+
+      # --- INCLUSION DE LA DOCUMENTATION ---
+      - src: README.md
+        dst: /usr/share/doc/gatherpipe/README.md
+      - src: docs
+        dst: /usr/share/doc/gatherpipe/docs
+
+    # Scripts de cycle de vie du paquet (recharger systemd après install)
+    overrides:
+      deb:
+        scripts:
+          postinstall: deployment/debian/postinstall.sh
+
+  - id: gatherpipe-apk
+    package_name: gatherpipe
+    formats:
+      - apk
+    vendor: "GatherPipe Team"
+    homepage: "https://github.com/Anthill-Software/GatherPipe"
+    maintainer: "F.Colinet <23095517+FColinet@users.noreply.github.com>"
+    description: "Orchestrateur de métriques modulaire."
+    license: "CC BY-NC-SA 4.0"
+    
+    # Déploiement des fichiers sur le système Linux cible
+    contents:
+      - src: deployment/alpine/gatherpipe.initd
+        dst: /etc/init.d/gatherpipe
+        file_info:
+          mode: 0755
+      - src: deployment/alpine/logrotate
+        dst: /etc/logrotate.d/gatherpipe
+        file_info:
+          mode: 0644
+
+      # --- INCLUSION DE LA DOCUMENTATION ---
+      - src: README.md
+        dst: /usr/share/doc/gatherpipe/README.md
+      - src: docs
+        dst: /usr/share/doc/gatherpipe/docs
+
+    # Scripts de cycle de vie du paquet (recharger rc après install)
+    overrides:
+      apk:
+        scripts:
+          postinstall: deployment/alpine/postinstall.sh

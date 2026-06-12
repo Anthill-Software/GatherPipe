@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+
+name="gatherpipe"
+description="GatherPipe Orchestrator Engine"
+
+# Chemin du binaire installé par le paquet
+command="/usr/bin/gatherpipe"
+command_args="start"
+
+# OpenRC gère lui-même le démon (background) et le PID
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+
+# Redirection des flux slog de l'application
+output_log="/var/log/gatherpipe.log"
+error_log="/var/log/gatherpipe.err"
+
+depend() {
+  need net
+  after firewall
+}

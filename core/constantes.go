@@ -16,7 +16,7 @@ var Status = struct {
 	Stopped: "STOPPED",
 }
 
-var prefixFormat = "%-15s %s"
+var prefixFormat = "%-15s"
 
 var Prefix = struct {
 	Success     string

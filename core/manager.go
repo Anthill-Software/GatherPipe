@@ -98,9 +98,9 @@ func (m *PluginManager) loadPlugin(path string, config map[string]string) error 
 		},
 		Cmd: exec.Command(path),
 		Logger: hclog.New(&hclog.LoggerOptions{
-			Level:       hclog.Debug,             // On laisse passer le Debug
-			Output:      hclogToSlogRedirector{}, // Notre redirecteur vers slog
-			DisableTime: true,                    // On coupe l'heure de hclog, c'est slog qui gère !
+			Level:       hclog.Debug,                       // On laisse passer le Debug
+			Output:      NewLinkRedirector(path, "plugin"), // Le redirecteur vers slog
+			DisableTime: true,                              // On coupe l'heure de hclog, c'est slog qui gère !
 		}),
 		Managed:    true,
 		SyncStdout: os.Stdout,

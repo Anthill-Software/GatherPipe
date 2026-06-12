@@ -13,5 +13,5 @@
     }
   },
   "remoteUser": "vscode",
-  "postCreateCommand": "go mod init gatherpipe && go mod tidy"
+  "postCreateCommand": "go clean -modcache && go mod tidy"
 }
